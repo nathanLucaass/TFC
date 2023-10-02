@@ -25,6 +25,7 @@ class App {
     this.app.use(accessControl);
 
     this.app.use('/teams', teams);
+    this.app.use('/teams/:id', teams);
   }
 
   public start(PORT: string | number): void {

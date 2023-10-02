@@ -9,8 +9,8 @@ import { Response } from 'superagent';
 
 import TeamsModel from "../database/models/TeamsModel";
 import * as teamsService from "../service/teams.services";
+import { getTeamById } from '../controller/teams.controller';
 
-import getAllTeam from "../controller/teams.controller";
 
 chai.use(chaiHttp);
 
@@ -18,10 +18,9 @@ const { expect } = chai;
 
 
 
-describe("Teams Controller", () => {
+describe("Teams Service", () => {
   beforeEach(function () { sinon.restore(); });
   it("should return all teams", async () => {
-
 
     const teams = [
       {
@@ -38,6 +37,32 @@ describe("Teams Controller", () => {
     const result = await teamsService.getAllTeamsService();
 
     expect(result).to.be.deep.eq(teams);
+  });
+
+  it("should return team by id", async () => {
+    const team = {
+      id: 1,
+      teamName: "Cruzeiro",
+    };
+    sinon.stub(TeamsModel, "findByPk").resolves(TeamsModel.build(team));
+
+    const result = await teamsService.getTeamByIdService(1);
+
+    expect(result).to.be.deep.eq({ status: "SUCCESS", data: team });
+  });
+
+  // it("should return a error if id is not provided", async () => {
+  //   const result = await teamsService.getTeamByIdService(null);
+
+  //   expect(result).to.be.deep.eq({ status: "ERROR", message: "Id is required" });
+  // });
+
+  it("should return a error if team not found", async () => {
+    sinon.stub(TeamsModel, "findByPk").resolves(null);
+
+    const result = await teamsService.getTeamByIdService(1);
+
+    expect(result).to.be.deep.eq({ status: "ERROR", message: "Team not found" });
   });
 });
 
@@ -63,7 +88,27 @@ describe("Teams Controller", () => {
     expect(status).to.equal(200);
     expect(body).to.deep.equal(teams)
   });
-});
 
-//Evaluator Error 
+  it("should return team by id", async () => {
+    const team = {
+      id: 1,
+      teamName: "Cruzeiro",
+    };
+    sinon.stub(teamsService, 'getTeamByIdService').resolves({ status: "SUCCESS", data: team });
+
+    const { status, body } = await chai.request(app).get('/teams/1');
+
+    expect(status).to.equal(200);
+    expect(body).to.deep.equal(team)
+  });
+
+  it("should return a error if team not found", async () => {
+    sinon.stub(teamsService, 'getTeamByIdService').resolves({ status: "ERROR", message: "Team not found" });
+    
+    const { status, body } = await chai.request(app).get('/teams/99');
+
+    expect(status).to.equal(404);
+    expect(body).to.deep.equal({ message: "Team not found" })
+  });
+});
 
