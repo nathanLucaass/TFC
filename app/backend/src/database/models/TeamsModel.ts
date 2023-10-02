@@ -7,7 +7,7 @@ import {
 } from 'sequelize';
 import db from '.';
 
-class Teams extends Model<InferAttributes<Teams>,
+export default class Teams extends Model<InferAttributes<Teams>,
 InferCreationAttributes<Teams>> {
   declare id: CreationOptional<number>;
 
@@ -24,9 +24,10 @@ Teams.init({
   teamName: {
     type: DataTypes.STRING,
     allowNull: false,
+    field: 'team_name',
   },
 }, {
   sequelize: db,
-  modelName: 'Teams',
+  modelName: 'teams',
   timestamps: false,
 });
