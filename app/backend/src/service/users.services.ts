@@ -24,7 +24,7 @@ export const loginService = async (email: string, password: string): Promise<Use
   if (!user) return { status: 'ERROR', message: 'User not found' };
 
   if (!bcrypt.compareSync(password, user
-    .password)) return { status: 'ERROR', message: 'Invalid password' };
+    .password)) return { status: 'ERROR', message: 'Invalid email or password' };
 
   const token = generateToken(email, password);
 
