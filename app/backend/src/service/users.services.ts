@@ -19,7 +19,7 @@ type UserResponse = {
 };
 
 export const loginService = async (email: string, password: string): Promise<UserResponse> => {
-  if (!email || !password) return { status: 'ERROR', message: 'Email and password are required' };
+  if (!email || !password) return { status: 'ERROR', message: 'All fields must be filled' };
 
   const user = await UsersModel.findOne({ where: { email } });
 
