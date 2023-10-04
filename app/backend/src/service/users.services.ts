@@ -27,26 +27,25 @@ type RoleResponse = {
 };
 
 export const loginService = async (email: string, password: string): Promise<UserResponse> => {
+  console.log(email, 'email');
+  const errorMensage = 'Invalid email or password';
   const user = await UsersModel.findOne({ where: { email } });
 
-  if (!user) return { status: 'ERROR', message: 'User not found' };
+  if (!user) return { status: 'ERROR', message: errorMensage };
 
   if (!bcrypt.compareSync(password, user
-    .password)) return { status: 'ERROR', message: 'Invalid email or password' };
+    .password)) return { status: 'ERROR', message: errorMensage };
 
-  const token = generateToken(email, password);
+  const token = generateToken(email);
 
   return { status: 'SUCCESS', data: token };
 };
 
-export const getRoleService = async (email: string, password: string): Promise<RoleResponse> => {
+export const getRoleService = async (email: string): Promise<RoleResponse> => {
   const user = await UsersModel.findOne({ where: { email } });
   console.log(user);
 
   if (!user) return { status: 'ERROR', message: 'User not found' };
-
-  if (!bcrypt.compareSync(password, user
-    .password)) return { status: 'ERROR', message: 'Invalid email or password' };
 
   return { status: 'SUCCESS', role: user.dataValues.role };
 };
