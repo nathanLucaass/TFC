@@ -7,5 +7,3 @@ router.get('/', getAllTeams);
 router.get('/:id', getTeamById);
 
 export default router;
-
-// Evaluator Error

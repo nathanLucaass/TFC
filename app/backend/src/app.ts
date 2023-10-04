@@ -29,6 +29,7 @@ class App {
     this.app.use('/teams/:id', teams);
 
     this.app.use('/login', users);
+    this.app.use('/login/role', users);
   }
 
   public start(PORT: string | number): void {

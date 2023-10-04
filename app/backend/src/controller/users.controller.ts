@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { loginService } from '../service/users.services';
+import { loginService, getRoleService } from '../service/users.services';
 
 const login = async (req: Request, res: Response): Promise<void | Response> => {
   const { email, password } = req.body;
@@ -8,4 +8,11 @@ const login = async (req: Request, res: Response): Promise<void | Response> => {
   res.status(200).json(response.data);
 };
 
-export default login;
+const getRole = async (req: Request, res: Response): Promise<void | Response> => {
+  const { email, password } = req.body;
+  const response = await getRoleService(email, password);
+  if (response.status === 'ERROR') return res.status(400).json({ message: response.message });
+  res.status(200).json({ role: response.role });
+};
+
+export { login, getRole };

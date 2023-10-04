@@ -18,6 +18,14 @@ type UserResponse = {
   message: string
 };
 
+type RoleResponse = {
+  status: 'SUCCESS',
+  role: string
+} | {
+  status: 'ERROR',
+  message: string
+};
+
 export const loginService = async (email: string, password: string): Promise<UserResponse> => {
   const user = await UsersModel.findOne({ where: { email } });
 
@@ -29,4 +37,16 @@ export const loginService = async (email: string, password: string): Promise<Use
   const token = generateToken(email, password);
 
   return { status: 'SUCCESS', data: token };
+};
+
+export const getRoleService = async (email: string, password: string): Promise<RoleResponse> => {
+  const user = await UsersModel.findOne({ where: { email } });
+  console.log(user);
+
+  if (!user) return { status: 'ERROR', message: 'User not found' };
+
+  if (!bcrypt.compareSync(password, user
+    .password)) return { status: 'ERROR', message: 'Invalid email or password' };
+
+  return { status: 'SUCCESS', role: user.dataValues.role };
 };
