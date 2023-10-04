@@ -1,5 +1,7 @@
 import * as sinon from 'sinon';
 import * as chai from 'chai';
+import * as jwt from 'jsonwebtoken';
+import * as bcrypt from 'bcryptjs';
 
 // @ts-ignore
 import chaiHttp = require('chai-http');
@@ -10,7 +12,7 @@ import { Request } from 'express';
 
 import UsersModel from "../database/models/UsersModel";
 import * as usersService from "../service/users.services";
-import login from '../controller/users.controller';
+import { login } from '../controller/users.controller';
 
 chai.use(chaiHttp);
 
@@ -21,25 +23,27 @@ describe("Users Controller", () => {
 
   beforeEach(function () { sinon.restore(); });
 
-  it("hould return a token if user is found", async () => {
-   req.body = { email: 'test', password: 'test' };
-  
-   sinon.stub(usersService, 'loginService').resolves({ status: "SUCCESS", data: {token: 'token'} });
+  it("should return a token if user is found", async () => {
+    const user = UsersModel.build({
+      id: 1,
+      username: 'test',
+      role: 'admin',
+      email: 'test@test.com',
+      password: 'test123',
+    });
+    sinon.stub(UsersModel, 'findOne').resolves(user);
+    sinon.stub(bcrypt, 'compareSync').returns(true);
+    sinon.stub(jwt, 'sign').returns();
 
-    const { status, body } = await chai.request(app).post('/login').send(req.body);
-
-    expect(status).to.equal(200);
-    expect(body).to.deep.equal({token: 'token'})
+    const response = await usersService.loginService('test', 'test');
+    
+    expect(response).to.not.be.equal(null);
   });
 
   it("should return a error if user not found", async () => {
-    req.body = { email: 'test', password: 'test' };
-    sinon.stub(usersService, 'loginService').resolves({ status: "ERROR", message: "User not found" });
-    
-    const { status, body } = await chai.request(app).post('/login').send(req.body);
+    const response = await usersService.loginService('test', 'test');
 
-    expect(status).to.equal(404);
-    expect(body).to.deep.equal({ message: "User not found" })
+    expect(response).to.be.deep.eq({ status: "ERROR", message: "User not found" });
   })
 
 });

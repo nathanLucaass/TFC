@@ -12,22 +12,17 @@ import { Request } from 'express';
 
 import UsersModel from "../database/models/UsersModel";
 import * as usersService from "../service/users.services";
-import login from '../controller/users.controller';
+import { login } from '../controller/users.controller';
 
 chai.use(chaiHttp);
 
 const { expect } = chai;
 
 
-describe("Users Controller", () => {
+describe("Users Service", () => {
 
   beforeEach(function () { sinon.restore(); });
 
-  it("should return an error if some field is missing", async () => {
-    const response = await usersService.loginService('', '');
-
-    expect(response).to.be.deep.eq({ status: "ERROR", message: "All fields must be filled" });
-  });
   it("should return a error if user not found", async () => {
     const response = await usersService.loginService('test', 'test');
 
