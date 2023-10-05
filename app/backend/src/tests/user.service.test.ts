@@ -23,9 +23,16 @@ describe("Users Service", () => {
 
   beforeEach(function () { sinon.restore(); });
 
-  it("should return a error if user not found", async () => {
+  it("loginService error", async () => {
     const response = await usersService.loginService('test', 'test');
+
+    expect(response).to.be.deep.eq({ status: "ERROR", message: "Invalid email or password" });
+  });
+
+  it('getRoleService error', async () => {
+    const response = await usersService.getRoleService('test');
 
     expect(response).to.be.deep.eq({ status: "ERROR", message: "User not found" });
   });
+  
 });

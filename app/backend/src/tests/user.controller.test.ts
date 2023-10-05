@@ -43,7 +43,7 @@ describe("Users Controller", () => {
   it("should return a error if user not found", async () => {
     const response = await usersService.loginService('test', 'test');
 
-    expect(response).to.be.deep.eq({ status: "ERROR", message: "User not found" });
+    expect(response).to.be.deep.eq({ status: "ERROR", message: "Invalid email or password" });
   })
 
 });
