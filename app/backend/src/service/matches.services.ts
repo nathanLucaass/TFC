@@ -16,6 +16,9 @@ type MatchResponse = {
   status: 'SUCCESS',
   data: Match[]
 };
+type UpdateResponse = {
+  message: string;
+};
 
 export const getAllMatchesService = async (): Promise<MatchResponse> => {
   const matches = await MatchesModel.findAll({
@@ -50,4 +53,13 @@ export const getAllMatchesProgressService = async (status: boolean): Promise<Mat
   });
   const mappedMatches: Match[] = matches.map((item) => item.toJSON());
   return { status: 'SUCCESS', data: mappedMatches };
+};
+
+export const finishMatchByIdService = async (id: number): Promise<UpdateResponse> => {
+  const match = await MatchesModel.findByPk(id);
+  if (!match) {
+    return { message: 'Match not found' };
+  }
+  await match.update({ inProgress: false });
+  return { message: 'Finished' };
 };
