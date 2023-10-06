@@ -20,6 +20,14 @@ type UpdateResponse = {
   message: string;
 };
 
+type OneMatchResponse = {
+  status: 'SUCCESS',
+  data: Match
+} | {
+  status: 'ERROR',
+  data: string,
+};
+
 export const getAllMatchesService = async (): Promise<MatchResponse> => {
   const matches = await MatchesModel.findAll({
     include: [
@@ -75,4 +83,24 @@ export const atualizateMatchByIdService = async (
   }
   await match.update({ homeTeamGoals, awayTeamGoals });
   return { message: 'Updated' };
+};
+
+export const createMatchService = async (
+  homeTeamId: number,
+  awayTeamId: number,
+  homeTeamGoals: number,
+  awayTeamGoals: number,
+): Promise<OneMatchResponse> => {
+  const match = await MatchesModel.create({
+    homeTeamId,
+    awayTeamId,
+    homeTeamGoals,
+    awayTeamGoals,
+    inProgress: true,
+  });
+  const createdMatch = await MatchesModel.findByPk(match.id, {
+    include: [{ association: 'homeTeam', attributes: [] },
+      { association: 'awayTeam', attributes: [] }] });
+  if (!createdMatch) return { status: 'ERROR', data: 'Error On createMatch' };
+  return { status: 'SUCCESS', data: createdMatch.toJSON() };
 };

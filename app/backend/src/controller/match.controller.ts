@@ -4,6 +4,7 @@ import {
   getAllMatchesProgressService,
   finishMatchByIdService,
   atualizateMatchByIdService,
+  createMatchService,
 } from '../service/matches.services';
 
 export const getAllMatches = async (req: Request, res: Response): Promise<void> => {
@@ -28,4 +29,10 @@ export const atualizateMatchById = async (req: Request, res: Response): Promise<
   const { homeTeamGoals, awayTeamGoals } = req.body;
   const match = await atualizateMatchByIdService(Number(id), homeTeamGoals, awayTeamGoals);
   res.status(200).json(match);
+};
+
+export const createMatch = async (req: Request, res: Response): Promise<void> => {
+  const { homeTeamId, awayTeamId, homeTeamGoals, awayTeamGoals } = req.body;
+  const match = await createMatchService(homeTeamId, awayTeamId, homeTeamGoals, awayTeamGoals);
+  res.status(201).json(match.data);
 };
