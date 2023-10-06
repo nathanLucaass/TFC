@@ -63,3 +63,16 @@ export const finishMatchByIdService = async (id: number): Promise<UpdateResponse
   await match.update({ inProgress: false });
   return { message: 'Finished' };
 };
+
+export const atualizateMatchByIdService = async (
+  id: number,
+  homeTeamGoals: number,
+  awayTeamGoals: number,
+): Promise<UpdateResponse> => {
+  const match = await MatchesModel.findByPk(id);
+  if (!match) {
+    return { message: 'Match not found' };
+  }
+  await match.update({ homeTeamGoals, awayTeamGoals });
+  return { message: 'Updated' };
+};
