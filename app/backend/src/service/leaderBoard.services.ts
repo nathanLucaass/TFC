@@ -82,20 +82,19 @@ const awayTeamsPerfomace = async (): Promise<TeamStats[]> => {
 
 const leaderBoardService = async (local:string): Promise<TeamStats[]> => {
   let stands;
+  if (local === 'home') { stands = await homeTeamsPerfomace(); }
+  if (local === 'away') { stands = await awayTeamsPerfomace(); }
   if (!stands) throw new Error('Invalid local');
-  if (local === 'home') {
-    stands = await homeTeamsPerfomace();
-  }
-  if (local === 'away') {
-    stands = await awayTeamsPerfomace();
-  }
   return stands.sort((a, b) => {
-    if (a.totalPoints > b.totalPoints) { return -1; }
-    if (a.totalPoints < b.totalPoints) { return 1; }
-    if (a.goalsBalance > b.goalsBalance) { return -1; }
-    if (a.goalsBalance < b.goalsBalance) { return 1; }
-    if (a.goalsFavor > b.goalsFavor) { return -1; }
-    if (a.goalsFavor < b.goalsFavor) { return 1; }
+    if (a.totalPoints !== b.totalPoints) {
+      return b.totalPoints - a.totalPoints;
+    }
+    if (a.goalsBalance !== b.goalsBalance) {
+      return b.goalsBalance - a.goalsBalance;
+    }
+    if (a.goalsFavor !== b.goalsFavor) {
+      return b.goalsFavor - a.goalsFavor;
+    }
     return 0;
   });
 };
