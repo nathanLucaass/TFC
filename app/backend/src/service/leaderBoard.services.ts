@@ -10,7 +10,7 @@ type TeamStats = {
   goalsFavor: number;
   goalsOwn: number;
   goalsBalance: number;
-  efficiency: string;
+  efficiency: number;
 };
 const createStats = (teamStatsMap: Map<number, TeamStats>, match: Match) => teamStatsMap
   .get(match.homeTeamId) || {
@@ -30,7 +30,7 @@ const calculateGolsBalance = (goalsFavor: number, goalsOwn:number) => goalsFavor
 const calculateEfficiency = (totalPoints: number, totalGames: number) =>
   (totalPoints / (totalGames * 3)) * 100;
 
-const homeTeamsPerfomaceService = async (): Promise<TeamStats[]> => {
+const homeTeamsPerfomace = async (): Promise<TeamStats[]> => {
   const matches = await getAllMatchesService();
   const teamStatsMap = new Map<number, TeamStats>();
 
@@ -47,15 +47,15 @@ const homeTeamsPerfomaceService = async (): Promise<TeamStats[]> => {
     } else { teamStats.totalLosses += 1; }
 
     teamStats.goalsBalance = calculateGolsBalance(teamStats.goalsFavor, teamStats.goalsOwn);
-    teamStats.efficiency = calculateEfficiency(teamStats.totalPoints, teamStats.totalGames)
-      .toFixed(2);
+    teamStats.efficiency = Number(calculateEfficiency(teamStats.totalPoints, teamStats.totalGames)
+      .toFixed(2));
 
     teamStatsMap.set(match.homeTeamId, teamStats);
   });
   return Array.from(teamStatsMap.values());
 };
 
-const awayTeamsPerfomaceService = async (): Promise<TeamStats[]> => {
+const awayTeamsPerfomace = async (): Promise<TeamStats[]> => {
   const matches = await getAllMatchesService();
   const teamStatsMap = new Map<number, TeamStats>();
 
@@ -72,12 +72,32 @@ const awayTeamsPerfomaceService = async (): Promise<TeamStats[]> => {
     } else { teamStats.totalLosses += 1; }
 
     teamStats.goalsBalance = calculateGolsBalance(teamStats.goalsFavor, teamStats.goalsOwn);
-    teamStats.efficiency = calculateEfficiency(teamStats.totalPoints, teamStats.totalGames)
-      .toFixed(2);
+    teamStats.efficiency = Number(calculateEfficiency(teamStats.totalPoints, teamStats.totalGames)
+      .toFixed(2));
 
     teamStatsMap.set(match.awayTeamId, teamStats);
   });
   return Array.from(teamStatsMap.values());
 };
 
-export { homeTeamsPerfomaceService, awayTeamsPerfomaceService };
+const leaderBoardService = async (local:string): Promise<TeamStats[]> => {
+  let stands;
+  if (!stands) throw new Error('Invalid local');
+  if (local === 'home') {
+    stands = await homeTeamsPerfomace();
+  }
+  if (local === 'away') {
+    stands = await awayTeamsPerfomace();
+  }
+  return stands.sort((a, b) => {
+    if (a.totalPoints > b.totalPoints) { return -1; }
+    if (a.totalPoints < b.totalPoints) { return 1; }
+    if (a.goalsBalance > b.goalsBalance) { return -1; }
+    if (a.goalsBalance < b.goalsBalance) { return 1; }
+    if (a.goalsFavor > b.goalsFavor) { return -1; }
+    if (a.goalsFavor < b.goalsFavor) { return 1; }
+    return 0;
+  });
+};
+
+export default leaderBoardService;
