@@ -1,5 +1,8 @@
 import { Request, Response } from 'express';
-import homeTeamsPerfomaceService from '../service/leaderBoard.services';
+import {
+  homeTeamsPerfomaceService,
+  awayTeamsPerfomaceService,
+} from '../service/leaderBoard.services';
 
 const homeTeamsPerfomace = async (req: Request, res: Response): Promise<void> => {
   const homeTeamStatsList = await homeTeamsPerfomaceService();
@@ -8,4 +11,11 @@ const homeTeamsPerfomace = async (req: Request, res: Response): Promise<void> =>
   res.status(200).json(homeTeamStatsList);
 };
 
-export default homeTeamsPerfomace;
+const awayTeamsPerfomace = async (req: Request, res: Response): Promise<void> => {
+  const awayTeamStatsList = await awayTeamsPerfomaceService();
+  console.log(awayTeamStatsList);
+
+  res.status(200).json(awayTeamStatsList);
+};
+
+export { homeTeamsPerfomace, awayTeamsPerfomace };
