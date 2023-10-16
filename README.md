@@ -30,7 +30,7 @@ This project leverages various technologies to provide effective functionality. 
 - GET /leaderboard/home: Get home team leaderboards.
 - GET /leaderboard/away: Get away team leaderboards.
 - GET /leaderboard: Get overall team leaderboards.
-- 
+  
 ##Error Handling
 HTTP status codes and descriptive error messages are used for error handling.
 Proper validation of requests and data ensures data integrity.
